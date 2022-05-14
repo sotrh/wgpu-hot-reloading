@@ -1,0 +1,13 @@
+[package]
+name = "app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hot_reload = { path = "../hot_reload" }
+shared = { path = "../shared" }
+logic = { path = "../logic" }
+pollster = "0.2"
+
+[features]
+hot_reload = []
