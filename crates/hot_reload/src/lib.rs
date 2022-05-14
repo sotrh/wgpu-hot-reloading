@@ -62,7 +62,7 @@ impl HotReloadLib {
                 if path.as_path() == self.original_lib_path {
                     println!("Found update for {:?} with {:?}", path, op);
                     // On Linux notify creates both CREATE and REMOVE events
-                    if !(op & (CREATE | REMOVE)).is_empty() {
+                    if !(op & CREATE).is_empty() {
                         should_reload = true;
                     }
                 }

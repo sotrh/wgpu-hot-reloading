@@ -19,7 +19,7 @@ pub fn render_state(state: &mut shared::State) {
             let mut encoder = state.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
                 label: None,
             });
-            let rpass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+            let mut rpass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("Main Render Pass"),
                 color_attachments: &[
                     wgpu::RenderPassColorAttachment {
@@ -33,6 +33,10 @@ pub fn render_state(state: &mut shared::State) {
                 ],
                 depth_stencil_attachment: None,
             });
+
+            rpass.set_pipeline(&state.pipeline);
+            rpass.draw(0..6, 0..1);
+
             drop(rpass);
             state.queue.submit(Some(encoder.finish()));
             output.present();

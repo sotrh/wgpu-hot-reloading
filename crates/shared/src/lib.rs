@@ -7,6 +7,7 @@ pub struct State {
     pub queue: wgpu::Queue,
     pub surface: wgpu::Surface,
     pub surface_config: wgpu::SurfaceConfiguration,
+    pub pipeline: wgpu::RenderPipeline,
 }
 
 impl State {
@@ -47,11 +48,55 @@ impl State {
         };
         surface.configure(&device, &surface_config);
 
+        let shader = device.create_shader_module(&wgpu::include_wgsl!("fullscreen_quad.wgsl"));
+        let layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+            label: None,
+            bind_group_layouts: &[],
+            push_constant_ranges: &[],
+        });
+        let pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+            label: None,
+            layout: None,
+            vertex: wgpu::VertexState {
+                module: &shader,
+                entry_point: "vs_main",
+                buffers: &[],
+            },
+            primitive: wgpu::PrimitiveState {
+                topology: wgpu::PrimitiveTopology::TriangleList,
+                strip_index_format: None,
+                front_face: wgpu::FrontFace::Ccw,
+                cull_mode: None,
+                unclipped_depth: false,
+                polygon_mode: wgpu::PolygonMode::Fill,
+                conservative: false,
+            },
+            depth_stencil: None,
+            multisample: wgpu::MultisampleState {
+                count: 1,
+                mask: !0,
+                alpha_to_coverage_enabled: false,
+            },
+            fragment: Some(wgpu::FragmentState {
+                module: &shader,
+                entry_point: "fs_main",
+                targets: &[
+                    wgpu::ColorTargetState {
+                        format,
+                        blend: None,
+                        write_mask: wgpu::ColorWrites::all(),
+                    }
+                ],
+            }),
+            multiview: None,
+        });
+
         State {
             device,
             queue,
             surface,
             surface_config,
+            pipeline,
         }
     }
 }
